@@ -12,6 +12,8 @@ function Dashboard() {
             <Link to='enhanced-todo-app' className='hover:text-blue-800 underline'>Enhanced Todo App</Link>
             <Link to='form-validation' className='hover:text-blue-800 underline'>Form Validation</Link>
             <Link to='progress-bar' className='hover:text-blue-800 underline'>Dynamic Multi-Input Progress Bar</Link>
+            <Link to='countdown-timer' className='hover:text-blue-800 underline'>Advanced Countdown Timer</Link>
+            <Link to='live-search' className='hover:text-blue-800 underline'>Live Search with Highlighting</Link>
         </div>
     </div>
   )
