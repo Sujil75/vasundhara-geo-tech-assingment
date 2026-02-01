@@ -1,53 +1,33 @@
-import React, { useReducer, useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {v4 as uuidv4} from 'uuid'
 
-const initialState = []
-
-function reducer(state, action) {
-    switch(action.type) {
-        case "ADD_OBJ":
-            return [...state, action.todoObj]
-        case "GET_OBJ":
-            return action.todoObj
-        default:
-            return state
-    }
-}
-
-function UserForm() {
+function UserForm(props) {
+  const {onAddTodo} = props
   const [heading, setHeading] = useState("")
   const [description, setDesc] = useState("")
-  const [state, dispatch] = useReducer(reducer, initialState)
-
-  useEffect(() => {
-    try {
-        const response = JSON.parse(localStorage.getItem("todoList"))
-        if (response) dispatch({type: "GET_OBJ", todoObj: response})
-    }catch(err) {
-        console.log(err)
-    }
-  }, [])
-
-  useEffect(() => {
-    try {
-        localStorage.setItem("todoList", JSON.stringify(state))
-    } catch(err) {
-        console.log(err)
-    }
-  }, [state])
+  const [priority, setPriority] = useState("All")
+  const [error, setError] = useState("")
 
   const onHandleSubmit = e => {
     e.preventDefault()
 
+    if (!heading || !description) {
+        setError("Please enter values")
+        return 
+    }
+
     const newTodo = {
         id: uuidv4(),
         taskHeading: heading,
-        taskDescription: description
+        taskDescription: description,
+        priority
     }
 
-    dispatch({type: "ADD_OBJ", todoObj: newTodo})
+    onAddTodo(newTodo)
+    
     setHeading("")
     setDesc("")
+    setPriority("All")
   }
 
   return (
@@ -64,6 +44,7 @@ function UserForm() {
                     className='box-border border rounded-[10px] pl-4 p-2 w-full outline-none' 
                     value={heading}
                     onChange={e => setHeading(e.target.value)}
+                    onClick={() => setError("")}
                 />
             </div>
 
@@ -75,8 +56,51 @@ function UserForm() {
                     className='box-border border rounded-[10px] pl-4 p-2 w-full outline-none' 
                     value={description}
                     onChange={e => setDesc(e.target.value)}
+                    onClick={() => setError("")}
                 />
             </div>
+
+            <div className='w-full flex items-center gap-6'>
+                <h1>Priority:</h1>
+
+                <label htmlFor='all' className='flex items-center justify-center gap-1 text-[15px]'>
+                    <input 
+                        type='radio' 
+                        id="all" 
+                        name="priority" 
+                        value="All" 
+                        checked={priority === "All"}
+                        onChange={e => setPriority(e.target.value)}
+                    />
+                    All
+                </label>
+
+                <label htmlFor='active' className='flex items-center justify-center gap-1 text-[15px]'>
+                    <input 
+                        type='radio' 
+                        id="active" 
+                        name="priority" 
+                        value="Active" 
+                        checked={priority === "Active"}
+                        onChange={e => setPriority(e.target.value)}
+                    />
+                    Active
+                </label>
+
+                <label htmlFor='completed' className='flex items-center justify-center gap-1 text-[15px]'>
+                    <input 
+                        type='radio' 
+                        id="completed" 
+                        name="priority"
+                        value="Completed"
+                        checked={priority === "Completed"}
+                        onChange={e => setPriority(e.target.value)}
+                    />
+                    Completed
+                </label>
+            </div>
+
+            <p className='text-red-400 text-[20px]'>{error}</p>
 
             <div className='flex justify-end'>
                 <button type='submit' className='box-border p-2 pr-4 pl-4 rounded-[8px] text-white bg-blue-700 hover:bg-blue-900 cursor-pointer'>Submit</button>
